@@ -93,7 +93,7 @@ struct connection
 };
 
 void* wait_for_device(void*);
-void wait_connections(unsigned int local_port);
+void wait_connections();
 void notification(struct am_device_notification_callback_info*);
 void* conn_forwarding_thread(void* arg);
 
@@ -123,7 +123,8 @@ void recv_signal(int sig)
 
 #pragma mark Main function
 
-unsigned int g_iphone_port;
+unsigned short g_iphone_port;
+unsigned short g_local_port;
 
 int main (int argc, char *argv [])
 {
@@ -140,17 +141,13 @@ int main (int argc, char *argv [])
 			   );
 		return 0;
 	}
-	
-	unsigned int local_port;
-	
+		
 	// デバイス側ポートを取得
 	// バイトオーダーを変換
-	sscanf(argv[1], "%i", &g_iphone_port);
-	g_iphone_port = htons ((unsigned short int)g_iphone_port);
+	sscanf(argv[1], "%hu", &g_iphone_port);
 	
 	// Mac側ポートを取得
-	sscanf(argv[2], "%i", &local_port);
-	local_port = htons((unsigned short int ) local_port);
+	sscanf(argv[2], "%hu", &g_local_port);
 	
 	
 	// シグナル受信の動作を登録
@@ -171,12 +168,12 @@ int main (int argc, char *argv [])
 //	setup_md_hook(iphone_port);
 	
 	// Mac側のクライアントからの待ち受け開始
-	wait_connections (local_port);
+	wait_connections ();
 
 	return 0;
 }
 
-void wait_connections(unsigned int local_port)
+void wait_connections()
 {
 	struct sockaddr_in saddr;
 	int ret = 0;
@@ -186,7 +183,7 @@ void wait_connections(unsigned int local_port)
 	memset(&saddr, 0, sizeof(saddr));
 	saddr.sin_family = AF_INET;
 	saddr.sin_addr.s_addr = INADDR_ANY;
-	saddr.sin_port = (unsigned short)local_port;     
+	saddr.sin_port = htons(g_local_port);     
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 	
 	// トンネルを強制終了して再起動したときのバインド失敗を回避
@@ -238,18 +235,22 @@ void wait_connections(unsigned int local_port)
 
 void notification(struct am_device_notification_callback_info* info)
 {
+	char deviceName[BUFFER_SIZE];
+	CFStringRef devId = AMDeviceCopyDeviceIdentifier(info->dev);
+	CFStringGetCString(devId, deviceName, sizeof(deviceName), kCFStringEncodingASCII);
+	
 	if (target_device_id != nil) {
-		CFStringRef devId = AMDeviceCopyDeviceIdentifier(info->dev);
-		CFStringRef cfstrTargetDevice = CFStringCreateWithBytes(kCFAllocatorDefault, (const UInt8*)target_device_id, strlen(target_device_id), kCFStringEncodingASCII, false);
-		if (0 != CFStringCompare(devId, cfstrTargetDevice, kCFCompareCaseInsensitive)) {
-			printf("Ignoring device %s\n", CFStringGetCStringPtr(devId, kCFStringEncodingASCII));
+		if (0 != strcasecmp(deviceName, target_device_id)) {
+			printf("Ignoring device %s (need %s)\n", deviceName, target_device_id);
+			return;
 		}
 	}
-
+	
 	if (info -> msg == ADNCI_MSG_CONNECTED) {
 		target_device = info->dev;
+		printf("Device connected: %s\n", deviceName);
 	} else {
-		puts("Warning: Device disconnected.");
+		printf("Device disconnected: %s\n", deviceName);
 		target_device = NULL;
 		muxConn = 0;
 	}
@@ -269,12 +270,13 @@ void* wait_for_device(void* arg)
 			continue;
 		}
 		
-		puts("Info: Waiting for new connection...");
+		printf("Info: Waiting for new TCP connection on port %hu\n", g_local_port);
 				
 		// Mac側クライアントからの待ち
 		struct sockaddr_in sockAddrin;
 		socklen_t len = sizeof(sockAddrin);
 		int new_sock = accept(sock, (struct sockaddr*) &sockAddrin , &len);
+		
 		
 		if (new_sock == -1) {
 			printf("accept error\n");
@@ -305,7 +307,7 @@ void* wait_for_device(void* arg)
 		}				
 		puts("Info: Device connected.");
 				
-		ret = USBMuxConnectByPort(muxConn, g_iphone_port, &handle);
+		ret = USBMuxConnectByPort(muxConn, htons(g_iphone_port), &handle);
 		if (ret != ERR_SUCCESS) {
 			printf("USBMuxConnectByPort = %x, handle=%x\n", ret, handle);
 			goto error_service;

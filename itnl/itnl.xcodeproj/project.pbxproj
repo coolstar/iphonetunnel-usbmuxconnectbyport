@@ -29,8 +29,8 @@
 		08FB7796FE84155DC02AAC07 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		52CD373C0E83FA8D00B37BFD /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		52CD38530E84A54200B37BFD /* MobileDevice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileDevice.framework; path = /System/Library/PrivateFrameworks/MobileDevice.framework; sourceTree = "<absolute>"; };
-		8DD76FB20486AB0100D96B5E /* itnl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = itnl; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D27E00C10CB38D700C334CE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		9DDB93F311A011E600DAC890 /* itnl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = itnl; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +70,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76FB20486AB0100D96B5E /* itnl */,
+				9DDB93F311A011E600DAC890 /* itnl */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -93,7 +93,7 @@
 			name = itnl;
 			productInstallPath = "$(HOME)/bin";
 			productName = itnl;
-			productReference = 8DD76FB20486AB0100D96B5E /* itnl */;
+			productReference = 9DDB93F311A011E600DAC890 /* itnl */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
