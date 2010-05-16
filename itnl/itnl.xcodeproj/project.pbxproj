@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5215CAC10F19345B001E3EDE /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; };
 		52382D170E84F53700ADA825 /* MobileDevice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52CD38530E84A54200B37BFD /* MobileDevice.framework */; };
 		52CD373D0E83FA8D00B37BFD /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52CD373C0E83FA8D00B37BFD /* CoreFoundation.framework */; };
 		9D27E00D10CB38D700C334CE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D27E00C10CB38D700C334CE /* Foundation.framework */; };
+		9DAEE65D11A07926001A11CF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9DAEE65C11A07926001A11CF /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,10 +26,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		08FB7796FE84155DC02AAC07 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		52CD373C0E83FA8D00B37BFD /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		52CD38530E84A54200B37BFD /* MobileDevice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileDevice.framework; path = /System/Library/PrivateFrameworks/MobileDevice.framework; sourceTree = "<absolute>"; };
 		9D27E00C10CB38D700C334CE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		9DAEE65C11A07926001A11CF /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = win32_project/itunnel_mux/main.cpp; sourceTree = SOURCE_ROOT; };
 		9DDB93F311A011E600DAC890 /* itnl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = itnl; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -62,7 +62,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				08FB7796FE84155DC02AAC07 /* main.cpp */,
+				9DAEE65C11A07926001A11CF /* main.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -118,7 +118,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5215CAC10F19345B001E3EDE /* main.cpp in Sources */,
+				9DAEE65D11A07926001A11CF /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
