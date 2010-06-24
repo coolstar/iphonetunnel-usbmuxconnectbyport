@@ -22,6 +22,7 @@
 #define ADNCI_MSG_UNKNOWN       3
 
 typedef void* restore_dev_t;
+typedef void* AMRecoveryModeDevice;
 typedef void* afc_conn_t;
 typedef void* am_device_t;
 typedef int muxconn_t;
@@ -32,15 +33,9 @@ struct am_device_notification_callback_info
         unsigned int msg;       /* 4    one of ADNCI_MSG_* */
 };
 
-typedef void(*am_device_notification_callback_t)(struct am_device_notification_callback_info *);
+typedef void (*am_device_notification_callback_t)(struct am_device_notification_callback_info *);
 
-//typedef struct {
-//    unsigned int unknown0;                      /* 0 */
-//    unsigned int unknown1;                      /* 4 */
-//    unsigned int unknown2;                      /* 8 */
-//    am_device_notification_callback_t callback;   /* 12 */ 
-//    unsigned int unknown3;                      /* 16 */
-//} am_device_callbacks_t;
+typedef void (*am_restore_device_notification_callback)(AMRecoveryModeDevice device);
 
 typedef void* am_device_callbacks_t;
 
@@ -117,6 +112,17 @@ int AMDeviceStartService(am_device_t am_device, CFStringRef service_name, int *h
 int AFCConnectionOpen(int handle, unsigned int io_timeout, afc_conn_t* afc_connection);
 int AMDeviceDisconnect(am_device_t am_device);
 int AMDeviceStopSession(am_device_t am_device);
+
+int AMRestoreRegisterForDeviceNotifications(
+    am_restore_device_notification_callback dfu_connect_callback,
+    am_restore_device_notification_callback recovery_connect_callback,
+    am_restore_device_notification_callback dfu_disconnect_callback,
+    am_restore_device_notification_callback recovery_disconnect_callback,
+    unsigned int unknown0,
+    void *ctx);
+
+int AMRecoveryModeDeviceReboot(AMRecoveryModeDevice device);
+int AMRecoveryModeDeviceSetAutoBoot(AMRecoveryModeDevice device, bool autoboot);
 
 CFStringRef AMDeviceCopyDeviceIdentifier(am_device_t device);
 
@@ -202,6 +208,33 @@ unsigned short g_local_port = default_local_port;
 void print_error(int error = 0) {
 	int err = error != 0 ? error :
 #if WIN32
+		void dfu_connect_callback(AMRecoveryModeDevice device) 
+{
+	printf("dfu_connect_callback\n");
+}
+
+void dfu_disconnect_callback(AMRecoveryModeDevice device) 
+{
+	printf("dfu_disconnect_callback\n");	
+}
+
+void recovery_connect_callback(AMRecoveryModeDevice device) 
+{
+	printf("recovery_connect_callback\n");
+	AMRecoveryModeDeviceSetAutoBoot(device, true);
+	AMRecoveryModeDeviceReboot(device);
+}
+
+void recovery_disconnect_callback(AMRecoveryModeDevice device) 
+{
+	printf("recovery_disconnect_callback\n");
+}
+
+void kick_out_of_recovery()
+{
+	printf("Will try to kick connected devices out of the Recovery mode..\n");
+	AMRestoreRegisterForDeviceNotifications(dfu_connect_callback, recovery_connect_callback, dfu_disconnect_callback, recovery_disconnect_callback, 0, NULL);
+	Sleep(-1N32
 		GetLastError();
 #else
 		errno;
@@ -214,9 +247,10 @@ int main (int argc, char *argv [])
         // パラメータ確認
         // ヘルプ表示
         if ( !(argc >= 3 && argc <= 4))
-        {
-                printf(
-                           "\niphone_tunnel v2.0 for Mac\n"
+     ((rev 5))\n"
+			"\n"
+			"            printf(
+                           "\niphone_tunnel v2.0 for Mac\n"OR: iphone_tunnel -r to kick out of the recovery moder Mac\n"
                                 "Created by novi. (novi.mad@gmail.com)\n"
                                 "Restore mode hack by msft.guy\n"
 								"\nUsage: iphone_tunnel [<iPhone port> <Local port> [Device ID, 40 digit]]\n"
@@ -279,6 +313,9 @@ int main (int argc, char *argv [])
 		cbBuf = sizeof(wbuf);
 		error = rgv(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Apple Inc.\\Apple Mobile Device Support", L"InstallDir", RRF_RT_REG_SZ|RRF_ZEROONFAILURE, NULL, (LPBYTE)wbuf, &cbBuf);
 		if (ERROR_SUCCESS != error) {
+			print_ 1 && 0 == stricmp(argv[1], "-r")) {
+		kick_out_of_recovery();
+	}) {
 			print_error(error);
 			printf("Could not locate 'Apple Mobile Device Support' folder path in registry: ABORTING\n");
 			exit(EXIT_REGISTRY_ERROR);
@@ -476,98 +513,4 @@ void* THREADPROCATTR wait_for_device(void* arg)
                 
                 // 接続ソケット構造体を作る
                 connection1 = new connection;
-                if (!connection1) {
-                        exit(EXIT_GENERAL_ERROR);
-                }
-                connection2 = new connection;    
-                if (!connection2) {
-                        exit(EXIT_GENERAL_ERROR);
-                }
-                
-                // 送受信用のスレッドへ値を渡す
-                connection1->from_handle = new_sock;
-                connection1->to_handle = handle;
-                connection2->from_handle = handle;
-                connection2->to_handle = new_sock;
-                
-                printf("sock handle newsock:%d iphone:%d\n", new_sock, handle);
-                fflush(stdout);
-                
-                // 送受信用のスレッドを作成
-                int lpThreadId;
-                int lpThreadId2;
-                pthread_t thread1;
-                pthread_t thread2;
-                
-                lpThreadId = pthread_create(&thread1, NULL, conn_forwarding_thread, (void*)connection1);
-                lpThreadId2 = pthread_create(&thread2, NULL, conn_forwarding_thread, (void*)connection2);
-                
-                pthread_detach(thread2);
-                pthread_detach(thread1);
-        
-                Sleep(100);
-                
-                continue;
-
-                // 接続失敗時の後始末
-        error_connect:
-                printf("Error: Device Connect\n");
-                AMDeviceStopSession(target_device);
-                AMDeviceDisconnect(target_device);
-                sleep(1);
-                
-                continue;
-                
-        error_service:
-                printf("Error: Device Service\n");
-                AMDeviceStopSession(target_device);
-                AMDeviceDisconnect(target_device);
-                sleep(1);
-                continue;
-                
-        }
-}
-
-
-/****************************************************************************/
-
-// Mac からのデータを iPhone へ転送
-void* THREADPROCATTR conn_forwarding_thread(void* arg)
-{
-        connection* con = (connection*)arg;
-        uint8_t buffer[BUFFER_SIZE];
-        int bytes_recv, bytes_send;
-        
-        // スレッドカウントを増やす
-        threadCount++;
-        fflush(stdout);
-        printf("threadcount=%d\n",threadCount);
-        fflush(stdout);
-        
-        while (1) {
-                // Mac からのデータを受信
-                bytes_recv = recv(con->from_handle, (char*)buffer, BUFFER_SIZE, 0);
-                
-                // それを iPhone へ送る
-                bytes_send = send(con->to_handle, (char*)buffer, bytes_recv, 0);
-                
-                // エラー発生
-                if (bytes_recv == 0 || bytes_recv == SOCKET_ERROR || bytes_send == 0 || bytes_send == SOCKET_ERROR) {
-                        // スレッドカウントを減らす
-                        threadCount--;
-                        fflush(stdout);
-                        printf("threadcount=%d\n", threadCount);
-                        fflush(stdout);
-                        
-                        // コネクションを閉じる
-                        close(con->from_handle);
-                        close(con->to_handle);
-                                                
-                        delete con;
-                        
-                        // スレッドを終了
-                        break;
-                }
-        }
-        return nil;
-}
+      
