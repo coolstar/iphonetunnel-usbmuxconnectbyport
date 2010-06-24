@@ -165,27 +165,20 @@ struct connection
 
 void* THREADPROCATTR wait_for_device(void*);
 void wait_connections();
-void notification(struct am_device_notification_callback_info*);
-void*THREADPROCATTR conn_forwarding_thread(void* arg);
+void notification(struct am_device_notification_callback_info*static int threadCount = 0;
 
-// 接続数
-static int threadCount = 0;
-
-// Mac側のソケット
 static int  sock;
 
 static muxconn_t muxConn = 0;
 
-// デバイスID指定
 static const char* target_device_id = nil;
+ar* target_device_id = nil;
 
 // ターゲットデバイス
 static am_device_t target_device = NULL;
 
 #if !WIN32
-void recv_signal(int sig)
-{
-        printf("Info: Signal received. (%d)\n", sig);
+void recv_signal(ived. (%d)\n", sig);
         
         // 標準関数へシグナルを投げる
         fflush(stdout);
@@ -239,12 +232,10 @@ void kick_out_of_recovery()
 #else
 		errno;
 #endif
-	printf("Error 0x%X (%i): '%s'\n", err, err, strerror(err));
-}
-
-int main (int argc, char *argv [])
-{
-        // パラメータ確認
+if (argc < 2)
+	{
+		printf(
+			"\niphone_tunnel v2.0 for Win/�ータ確認
         // ヘルプ表示
         if ( !(argc >= 3 && argc <= 4))
      ((rev 5))\n"
@@ -252,7 +243,7 @@ int main (int argc, char *argv [])
 			"            printf(
                            "\niphone_tunnel v2.0 for Mac\n"OR: iphone_tunnel -r to kick out of the recovery moder Mac\n"
                                 "Created by novi. (novi.mad@gmail.com)\n"
-                                "Restore mode hack by msft.guy\n"
+                               store mode hack by msft.guy\n"
 								"\nUsage: iphone_tunnel [<iPhone port> <Local port> [Device ID, 40 digit]]\n"
                                 "Example: iphone_tunnel 22 9876 0123456...abcdef\n"
 								"Default ports are 22 %hu\n", default_local_port
@@ -316,14 +307,9 @@ int main (int argc, char *argv [])
 			print_ 1 && 0 == stricmp(argv[1], "-r")) {
 		kick_out_of_recovery();
 	}) {
-			print_error(error);
-			printf("Could not locate 'Apple Mobile Device Support' folder path in registry: ABORTING\n");
-			exit(EXIT_REGISTRY_ERROR);
-		}
-		wcscat_s<MAX_PATH>(wbuf, L"\\iTunesMobileDevice.dll");
+			print_error(errorsscanf(argv[1], "%hu", &g_iphone_port);MAX_PATH>(wbuf, L"\\iTunesMobileDevice.dll");
 		if (!LoadLibraryW(wbuf)) {
-			print_error();
-			printf("Could not load %ws: ABORTING\n", wbuf);
+ad %ws: ABORTING\n", wbuf);
 			exit(EXIT_LOAD_ERROR);
 		}
 		
@@ -337,26 +323,15 @@ int main (int argc, char *argv [])
         
 			// Mac側ポートを取得
 			sscanf(argv[2], "%hu", &g_local_port);
-		}
-        
-        
-#if !WIN32
-		// シグナル受信の動作を登録
+動作を登録
         signal(SIGABRT, recv_signal);
         signal(SIGILL, recv_signal);
-        signal(SIGINT, recv_signal);
-        signal(SIGSEGV, recv_signal);
+        signalignal(SIGSEGV, recv_signal);
         signal(SIGTERM, recv_signal);
 #endif        
         if (argc == 4) {
                 target_device_id = argv[3];
-                printf("Info: Target %s\n", argv[3]);
-        } else {
-                target_device_id = NULL;
-        }
-        
-        // Mac側のクライアントからの待ち受け開始
-        wait_connections ();
+                printf("Info: Target %s\n", argvonnections ();
 
         return 0;
 }
@@ -367,21 +342,17 @@ void wait_connections()
         int ret = 0;
         
         // Socket を作成
-        // Mac側
-        memset(&saddr, 0, sizeof(saddr));
-        saddr.sin_family = AF_INET;
-        saddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+        // Mret = bind(sock, (struct sockaddr*)&saddr, sizeof(struct sockaddr));
+ADDR_LOOPBACK);
         saddr.sin_port = htons(g_local_port);     
         sock = socket(AF_INET, SOCK_STREAM, 0);
         
-        // トンネルを強制終了して再起動したときのバインド失敗を回避
-        // http://homepage3.nifty.com/owl_h0h0/unix/job/UNIX/network/socket.html
+        /listen(sock, 0);
+			/ http://homepage3.nifty.com/owl_h0h0/unix/job/UNIX/network/socket.html
         int temp = 1;
         if(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&temp, sizeof(temp))) {
 			print_error();
-			printf("setsockopt() failed - ignorable\n");
-        }
-        
+			printf("setsock
         // バインド
         ret = bind(sock, (struct sockaddr*)&saddr, sizeof(struct sockaddr));
         
@@ -415,25 +386,19 @@ void wait_connections()
                 }
                 
 #if WIN32
-				Sleep(-1);
-#else
-				CFRunLoopRun();
-#endif
+				Slif
                 printf("RUN LOOP EXIT\n");
                 Sleep(1000);
         }
 }
 
-/****************************************************************************/
-
-void notification(struct am_device_notification_callback_info* info)
+/************************************************************m_device_notification_callback_info* info)
 {
         char deviceName[BUFFER_SIZE];
         CFStringRef devId = AMDeviceCopyDeviceIdentifier(info->dev);
         CFStringGetCString(devId, deviceName, sizeof(deviceName), kCFStringEncodingASCII);
         
-        if (target_device_id != nil) {
-                if (0 != strcasecmp(deviceName, target_device_id)) {
+        if(deviceName, target_device_id)) {
                         printf("Ignoring device %s (need %s)\n", deviceName, target_device_id);
                         return;
                 }
@@ -463,20 +428,18 @@ void* THREADPROCATTR wait_for_device(void* arg)
                         continue;
                 }
                 
-                printf("Info: Waiting for new TCP connection on port %hu\n", g_local_port);
+                printf("Info: Waiting for newrt);
                                 
                 // Mac側クライアントからの待ち
                 struct sockaddr_in sockAddrin;
-                socklen_t len = sizeof(sockAddrin);
-                int new_sock = accept(sock, (struct sockaddr*) &sockAddrin , &len);
+                socklen_t len = sizeocept(sock, (struct sockaddr*) &sockAddrin , &len);
                 
                 
                 if (new_sock == -1) {
                         printf("accept error\n");
                         continue;
                 }
-                
-                printf("Info: New connection...\n");
+             ection...\n");
                 
                 // ターゲットが準備完了
                 // デバイスへ接続
@@ -485,32 +448,27 @@ void* THREADPROCATTR wait_for_device(void* arg)
                 {
                         ret = AMDeviceConnect(target_device);
                         if (ret == ERR_SUCCESS) {
-                                muxConn = AMDeviceGetConnectionID(target_device);
-                        } else if (ret == -402653144) {
+                                muxConn = AMDeviceGetConnection          } else if (ret == -402653144) {
                                 restore_dev = AMRestoreModeDeviceCreate(0, AMDeviceGetConnectionID(target_device), 0);
                                 printf("restore_dev = %p\n", restore_dev);
                                 muxConn = AMRestoreModeDeviceGetDeviceID(restore_dev);
                                 printf("muxConn = %X\n", muxConn);
-                                AMRestoreModeDeviceReboot(restore_dev);
+        oot(restore_dev);
                                 sleep(10);
                         } else {
-                                printf("AMDeviceConnect = %i\n", ret);
-                                goto error_connect;
+                                printf("AMDeviceConnect = %i\ngoto error_connect;
                         }
                 }                               
-                puts("Info: Device connected.");
-                                
-                ret = USBMuxConnectByPort(muxConn, htons(g_iphone_port), &handle);
-                if (ret != ERR_SUCCESS) {
-                        printf("USBMuxConnectByPort = %x, handle=%x\n", ret, handle);
+            bytes_recv = recv(con->from_handle, (char*)buffer, BUFFER_SIZE, 0);
+		
+		bytes_send = send(con->to_handle, (char*)buffer, bytes_recv, 0);
+		MuxConnectByPort = %x, handle=%x\n", ret, handle);
                         goto error_service;
-                }
-                                
-                puts("Info: Service started.");
+                        puts("Info: Service started.");
                 
-                struct connection* connection1;
-                struct connection* connection2;
-                
-                // 接続ソケット構造体を作る
-                connection1 = new connection;
+                struct connection* connectioclose(con->from_handle);
+			close(con->to_handle);
+									
+			delete con;
+			nection1 = new connection;
       
