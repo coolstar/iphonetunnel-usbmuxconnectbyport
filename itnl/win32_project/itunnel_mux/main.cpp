@@ -304,7 +304,7 @@ if (argc < 2)
 		cbBuf = sizeof(wbuf);
 		error = rgv(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Apple Inc.\\Apple Mobile Device Support", L"InstallDir", RRF_RT_REG_SZ|RRF_ZEROONFAILURE, NULL, (LPBYTE)wbuf, &cbBuf);
 		if (ERROR_SUCCESS != error) {
-			print_ 1 && 0 == stricmp(argv[1], "-r")) {
+			print_ 1 && 0 == strcasecmp(argv[1], "-r")) {
 		kick_out_of_recovery();
 	}) {
 			print_error(errorsscanf(argv[1], "%hu", &g_iphone_port);MAX_PATH>(wbuf, L"\\iTunesMobileDevice.dll");
