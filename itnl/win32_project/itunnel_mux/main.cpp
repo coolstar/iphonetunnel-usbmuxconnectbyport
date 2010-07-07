@@ -4,147 +4,45 @@
 // http://i-funbox.com/blog/2008/09/itunesmobiledevicedll-changed-in-itunes-80/
 // 2010 msftguy
 
-#if WIN32 
-#include <winsock2.h>
-#include <stdio.h>
-#else 
-#import <CoreFoundation/CoreFoundation.h>
-#include <dlfcn.h>
-#include <unistd.h>
-#include <signal.h>
-#include <pthread.h>
-#include <netinet/ip.h>
-#include <mach/error.h>
-#endif 
+#include "platform.h"
+#include "MyMobileDevice.h"
 
-#define ADNCI_MSG_CONNECTED     1
-#define ADNCI_MSG_DISCONNECTED  2
-#define ADNCI_MSG_UNKNOWN       3
-
-typedef void* restore_dev_t;
-typedef void* AMRecoveryModeDevice;
-typedef void* afc_conn_t;
-typedef void* am_device_t;
-typedef int muxconn_t;
-
-struct am_device_notification_callback_info
-{
-        am_device_t dev;  /* 0    device */
-        unsigned int msg;       /* 4    one of ADNCI_MSG_* */
-};
-
-typedef void (*am_device_notification_callback_t)(struct am_device_notification_callback_info *);
-
-typedef void (*am_restore_device_notification_callback)(AMRecoveryModeDevice device);
-
-typedef void* am_device_callbacks_t;
-
-///////////////////////// WIN32 //////////////////////////////
-#if WIN32 
-typedef void* CFStringRef;
-#define nil NULL
-
-typedef void* pthread_t;
-typedef void* pthread_attr_t;
-
-#define THREADPROCATTR WINAPI
-
-typedef void *(THREADPROCATTR* thread_proc_t)(void *);
-
-int pthread_create(pthread_t * __restrict pHandle,
-                         const pthread_attr_t * __restrict,
-                         thread_proc_t threadStart,
-                         void* arg) 
-{
-	DWORD tid;
-	*pHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)threadStart, arg, CREATE_SUSPENDED, &tid);
-	return tid;
-}
-
-#define pthread_detach ResumeThread
-
-#define ERR_SUCCESS 0
-
-enum CFStringBuiltInEncodings {
-   //kCFStringEncodingMacRoman = 0,
-   //kCFStringEncodingWindowsLatin1 = 0x0500,
-   //kCFStringEncodingISOLatin1 = 0x0201,
-   //kCFStringEncodingNextStepLatin = 0x0B01,
-   kCFStringEncodingASCII = 0x0600,
-   //kCFStringEncodingUnicode = 0x0100,
-   //kCFStringEncodingUTF8 = 0x08000100,
-   //kCFStringEncodingNonLossyASCII = 0x0BFF
-};
-typedef enum CFStringBuiltInEncodings CFStringBuiltInEncodings;
-
-typedef int socklen_t;
-
-#define strcasecmp strcmpi
-
-#define sleep(x) Sleep (1000 * (x))
-
-typedef unsigned char uint8_t;
-
-#define close closesocket
-
-extern "C" bool CFStringGetCString(CFStringRef cfStr, char* buf, size_t cbBuf, CFStringBuiltInEncodings encoding);
-
-#pragma comment(lib, "ws2_32")
-#pragma comment(lib, "iTunesMobileDevice")
-#pragma comment(lib, "CoreFoundation")
-
-#else ////////////////////////// OS X ///////////////////
-
-#define THREADPROCATTR 
-
-#define Sleep(ms) usleep(ms*1000)
-
-#endif
-
-extern "C" {
-        
-int AMDeviceNotificationSubscribe(am_device_notification_callback_t notificationCallback, int , int, int , am_device_callbacks_t *callbacks);
-int AMDeviceConnect(am_device_t am_device);
-int AMDeviceIsPaired(am_device_t am_device);
-int AMDeviceValidatePairing(am_device_t am_device);
-int AMDeviceStartSession(am_device_t am_device);
-int AMDeviceStartService(am_device_t am_device, CFStringRef service_name, int *handle, unsigned int *unknown );
-int AFCConnectionOpen(int handle, unsigned int io_timeout, afc_conn_t* afc_connection);
-int AMDeviceDisconnect(am_device_t am_device);
-int AMDeviceStopSession(am_device_t am_device);
-
-int AMRestoreRegisterForDeviceNotifications(
-    am_restore_device_notification_callback dfu_connect_callback,
-    am_restore_device_notification_callback recovery_connect_callback,
-    am_restore_device_notification_callback dfu_disconnect_callback,
-    am_restore_device_notification_callback recovery_disconnect_callback,
-    unsigned int unknown0,
-    void *ctx);
-
-int AMRecoveryModeDeviceReboot(AMRecoveryModeDevice device);
-int AMRecoveryModeDeviceSetAutoBoot(AMRecoveryModeDevice device, bool autoboot);
-
-CFStringRef AMDeviceCopyDeviceIdentifier(am_device_t device);
-
-muxconn_t AMDeviceGetConnectionID(am_device_t device);
-muxconn_t AMRestoreModeDeviceGetDeviceID(restore_dev_t restore_device);
-int AMRestoreModeDeviceReboot(restore_dev_t restore_device);
-int USBMuxConnectByPort(muxconn_t muxConn, short netPort, int* sockHandle);
-
-
-restore_dev_t AMRestoreModeDeviceCreate(int arg1_is_0, int connId, int arg3_is_0);
-
-}
+#include "itunes_private.h"
 
 enum exit_status {
-        EXIT_SUCCESS_I = 0x00,
-        EXIT_DISCONNECTED = 0x1,
-        EXIT_CONNECT_ERROR = 0x02,
-        EXIT_SERVICE_ERROR = 0x03,
-        EXIT_BIND_ERROR = 0x04,
-        EXIT_GENERAL_ERROR = 0x05,
-		EXIT_OS_TOO_FUCKING_OLD = 0x6,
-		EXIT_REGISTRY_ERROR = 0x07,
+	EXIT_SUCCESS_I			= 0x00,
+	EXIT_DISCONNECTED		= 0x01,
+	EXIT_CONNECT_ERROR		= 0x02,
+	EXIT_SERVICE_ERROR		= 0x03,
+	EXIT_BIND_ERROR			= 0x04,
+	EXIT_GENERAL_ERROR		= 0x05,
+	EXIT_OS_TOO_FUCKING_OLD = 0x06,
+	EXIT_REGISTRY_ERROR		= 0x07,
+	EXIT_LOAD_ERROR			= 0x08,
+	EXIT_BAD_OPTIONS		= 0x09,
+	EXIT_BAD_OPTION_COMBO	= 0x0A,
+};
+
+
+typedef enum PROGRAM_MODE {
+	MODE_NONE,
+	MODE_TUNNEL, 
+	MODE_AUTOBOOT,
+	MODE_ICMD,
+} PROGRAM_MODE;
+
+static PROGRAM_MODE g_programMode = MODE_NONE;
+
+static char g_ibss[BUFSIZ] = "";
+static char g_exploit[BUFSIZ] = "";
+static char g_ibec[BUFSIZ] = "";
+static char g_ramdisk[BUFSIZ] = "";
+static char g_devicetree[BUFSIZ] = "";
+static char g_kernelcache[BUFSIZ] = "";
+static bool g_autoboot = FALSE;
+
+typedef char OPTION_T [BUFSIZ];
+Y_ERROR = 0x07,
 		EXIT_LOAD_ERROR  = 0x08,
 };
 
@@ -190,9 +88,8 @@ void recv_signal(ived. (%d)\n", sig);
 #pragma mark Main function
 
 #if WIN32 
-	const unsigned short default_local_port = 22;
-#else
-	const unsigned short default_local_port = 2022;
+	const uint g_iphone_port = 22;
+innst unsigned short default_local_port = 2022;
 #endif
 
 unsigned short g_iphone_port = 22;
@@ -201,9 +98,26 @@ unsigned short g_local_port = default_local_port;
 void print_error(int error = 0) {
 	int err = error != 0 ? error :
 #if WIN32
-		void dfu_connect_callback(AMRecoveryModeDevice device) 
+		typedef enum ICMD_STATE {
+	ICMD_ZERO,
+	ICMD_SENT_IBSS,
+	ICMD_SENT_EXPLOIT,
+	ICMD_SENT_IBEC,
+	ICMD_SENT_RAMDISK,
+	ICMD_SENT_DEVICETREE,
+	ICMD_SENT_KERNELCACHE,
+} ICMD_STATE;
+
+static ICMD_STATE g_icmdState = ICMD_ZERO;
+
+void dfu_connect_callback(AMRecoveryModeDevice device) 
 {
 	printf("dfu_connect_callback\n");
+	if (*g_ibss) {
+		uploadFileDfu(device, g_ibss);
+		Log(LOG_INFO, "iBSS %s loaded", g_ibss);
+	}
+	g_icmdState = ICMD_SENT_IBSS;
 }
 
 void dfu_disconnect_callback(AMRecoveryModeDevice device) 
@@ -214,36 +128,149 @@ void dfu_disconnect_callback(AMRecoveryModeDevice device)
 void recovery_connect_callback(AMRecoveryModeDevice device) 
 {
 	printf("recovery_connect_callback\n");
-	AMRecoveryModeDeviceSetAutoBoot(device, true);
-	AMRecoveryModeDeviceReboot(device);
+	switch (g_programMode) {
+	case MODE_AUTOBOOT:
+		AMRecoveryModeDeviceSetAutoBoot(device, true);
+		AMRecoveryModeDeviceReboot(device);	
+		break;
+	case MODE_ICMD:
+		if (g_icmdState == ICMD_ZERO) {
+			if (!*g_ibss) {
+				g_icmdState = ICMD_SENT_IBSS;
+			}
+		}
+		if (g_icmdState == ICMD_SENT_IBSS)  {
+			if (*g_exploit) {
+				uploadUsbExploit(device, g_exploit);
+				Log(LOG_INFO, "Payload %s sent", g_exploit);
+			}
+			g_icmdState = ICMD_SENT_EXPLOIT;
+		}
+		if (g_icmdState == ICMD_SENT_EXPLOIT)  {
+			g_icmdState = ICMD_SENT_IBEC;
+			if (*g_ibec) {
+				uploadFile(device, g_ibec);
+				sendCommand(device, "go");
+				Log(LOG_INFO, "iBEC %s loaded", g_ibec);
+				break; // continue after reconnect
+			}
+		}
+		if (g_icmdState == ICMD_SENT_IBEC) {
+			if (*g_ramdisk) {
+				uploadFile(device, g_ramdisk);
+				sendCommand(device, "ramdisk");
+				Log(LOG_INFO, "Ramdisk %s loaded", g_ramdisk);
+			}
+			g_icmdState = ICMD_SENT_RAMDISK;
+		}
+		if (g_icmdState == ICMD_SENT_RAMDISK) {
+			if (*g_devicetree) {
+				uploadFile(device, g_devicetree);
+				sendCommand(device, "devicetree");
+				Log(LOG_INFO, "Devicetree %s loaded", g_devicetree);
+			}
+			g_icmdState = ICMD_SENT_DEVICETREE;
+		}
+		if (g_icmdState == ICMD_SENT_DEVICETREE) {
+			if (*g_kernelcache) {
+				uploadFile(device, g_kernelcache);
+				sendCommand(device, "bootx");
+				Log(LOG_INFO, "Kernelcache %s loaded", g_kernelcache);
+			}
+			g_icmdState = ICMD_SENT_KERNELCACHE;
+		}
+	}
 }
 
 void recovery_disconnect_callback(AMRecoveryModeDevice device) 
 {
 	printf("recovery_disconnect_callback\n");
+	if (g_icmdState == ICMD_SENT_KERNELCACHE) {
+		g_icmdState = ICMD_ZERO;
+	}
 }
 
-void kick_out_of_recovery()
+void register_for_recovery_notifications()
 {
 	printf("Will try to kick connected devices out of the Recovery mode..\n");
 	AMRestoreRegisterForDeviceNotifications(dfu_connect_callback, recovery_connect_callback, dfu_disconnect_callback, recovery_disconnect_callback, 0, NULL);
 	Sleep(-1N32
-		GetLastError();
-#else
-		errno;
-#endif
-if (argc < 2)
-	{
-		printf(
+		GetLparse_args(int argc, char *argv [])
+{
+	char** pArg;
+	for (pArg = argv + 1; pArg < argv + argc; ++pArg) {
+		const char* arg = *pArg;
+		OPTION_T* pOpt = NULL;
+		int* pIntOpt = NULL;
+		PROGRAM_MODE newMode = MODE_NONE;
+		if (!strcmp(arg, "--tunnel")) {
+			newMode = MODE_TUNNEL;
+		} if (!strcmp(arg, "--ibss")) {
+			pOpt = &g_ibss; newMode = MODE_ICMD;
+		} else if (!strcmp(arg, "--exploit")) {
+			pOpt = &g_exploit; newMode = MODE_ICMD;
+		} else if (!strcmp(arg, "--ibec")) {
+			pOpt = &g_ibec; newMode = MODE_ICMD;
+		} else if (!strcmp(arg, "--ramdisk")) {
+			pOpt = &g_ramdisk; newMode = MODE_ICMD;
+		} else if (!strcmp(arg, "--devicetree")) {
+			pOpt = &g_devicetree; newMode = MODE_ICMD;
+		} else if (!strcmp(arg, "--kernelcache")) {
+			pOpt = &g_kernelcache; newMode = MODE_ICMD;
+		} else if (!strcmp(arg, "--autoboot")) {
+			g_autoboot = true; newMode = MODE_AUTOBOOT;
+		} else if (!strcmp(arg, "--iport")) {
+			pIntOpt = &g_iphone_port; newMode = MODE_TUNNEL;
+		} else if (!strcmp(arg, "--lport")) {
+			pIntOpt = &g_local_port; newMode = MODE_TUNNEL;
+		} else {
+			return EXIT_BAD_OPTIONS;
+		}
+
+		if (newMode != MODE_NONE && newMode != g_programMode) {
+			if (g_programMode == MODE_NONE) 
+				g_programMode = newMode;
+			else
+				return EXIT_BAD_OPTION_COMBO;
+		}
+		if (pOpt != NULL || pIntOpt != NULL) {
+			if (pArg + 1 >= argv + argc) {
+				return EXIT_BAD_OPTIONS;
+			}
+			++pArg;
+			if (pOpt) {
+				strncpy(*pOpt,  *pArg, sizeof(OPTION_T));
+			} else if (pIntOpt) {
+				if (sscanf(*pArg, "%i", pIntOpt) != 1) {
+					return EXIT_BAD_OPTIONS;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+
+void usage()
+{
+printf(
 			"\niphone_tunnel v2.0 for Win/�ータ確認
         // ヘルプ表示
         if ( !(argc >= 3 && argc <= 4))
      ((rev 5))\n"
 			"\n"
 			"            printf(
-                           "\niphone_tunnel v2.0 for Mac\n"OR: iphone_tunnel -r to kick out of the recovery moder Mac\n"
+ --tunnel [--iport <iPhone port>] [--lport <Local port>] [Device ID, 40 digit]]\n"
+			"OR: iphone_tunnel --autoboot to kick out of the recovery mode\n"
+			"OR: iphone_tunnel [--ibss <iBSS file>] [--exploit <iBSS USB exploit payload>]\n"
+			"\t[--ibec <iBEC file>] [--ramdisk <ramdisk file>]\n"
+			"\t[--devicetree <devicetree file>] [--kernelcache <kernelcache file>]r Mac\n"
                                 "Created by novi. (novi.mad@gmail.com)\n"
-                               store mode hack by msft.guy\n"
+                               sto}
+
+#if WIN32
+void platform_init() {
+
 								"\nUsage: iphone_tunnel [<iPhone port> <Local port> [Device ID, 40 digit]]\n"
                                 "Example: iphone_tunnel 22 9876 0123456...abcdef\n"
 								"Default ports are 22 %hu\n", default_local_port
@@ -303,12 +330,9 @@ if (argc < 2)
 
 		cbBuf = sizeof(wbuf);
 		error = rgv(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Apple Inc.\\Apple Mobile Device Support", L"InstallDir", RRF_RT_REG_SZ|RRF_ZEROONFAILURE, NULL, (LPBYTE)wbuf, &cbBuf);
-		if (ERROR_SUCCESS != error) {
-			print_ 1 && 0 == strcasecmp(argv[1], "-r")) {
-		kick_out_of_recovery();
-	}) {
-			print_error(errorsscanf(argv[1], "%hu", &g_iphone_port);MAX_PATH>(wbuf, L"\\iTunesMobileDevice.dll");
-		if (!LoadLibraryW(wbuf)) {
+		if (ERROR_SUCCESS }
+#else // OS X
+void platform_init() {{
 ad %ws: ABORTING\n", wbuf);
 			exit(EXIT_LOAD_ERROR);
 		}
@@ -318,13 +342,28 @@ ad %ws: ABORTING\n", wbuf);
 
         if (argc >= 3) {
 			// デバイス側ポートを取得
-			// バイトオーダーを変換
-			sscanf(argv[1], "%hu", &g_iphone_port);
-        
-			// Mac側ポートを取得
-			sscanf(argv[2], "%hu", &g_local_port);
-動作を登録
-        signal(SIGABRT, recv_signal);
+			// バイト�}
+#endif
+
+int main (int argc, char *argv [])
+{
+	platform_init();
+	
+	int ret = parse_args(argc, argv);
+	if (ret != 0 || argc == 1  || g_programMode == MODE_NONE) {
+		usage();
+		return ret;
+	}
+
+	switch (g_programMode) {
+	case MODE_AUTOBOOT:
+	case MODE_ICMD:
+		register_for_recovery_notifications();
+		break;
+	case MODE_TUNNEL:
+		wait_connections();
+		break;
+	}    signal(SIGABRT, recv_signal);
         signal(SIGILL, recv_signal);
         signalignal(SIGSEGV, recv_signal);
         signal(SIGTERM, recv_signal);

@@ -83,7 +83,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="itunes_private.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="itunes_private.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="MyMobileDevice.h" />
+    <ClInclude Include="platform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
