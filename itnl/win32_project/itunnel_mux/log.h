@@ -1,8 +1,9 @@
-enum LOG_LEVEL 
-{
-	LOG_FATAL,
-	LOG_ERROR,
-	LOG_INFO,
-	LOG_DEBUG,
-};
-void Log(LOG_LEVEL severity, const char* fmt...);
+
+#pragma once
+
+#ifndef _LOG_H
+#define _LOG_H
+
+void LogPrintf(LOG_LEVEL severity, const char* fmt...);
+
+#endif 

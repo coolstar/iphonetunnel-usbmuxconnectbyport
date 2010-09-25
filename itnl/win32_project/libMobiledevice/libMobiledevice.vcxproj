@@ -11,18 +11,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1761D269-E1EC-4C4C-B1EB-E403078751EF}</ProjectGuid>
+    <ProjectGuid>{35E664FD-7189-4AE6-888D-1AEBD36B5559}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>itunnel_mux</RootNamespace>
+    <RootNamespace>libMobiledevice</RootNamespace>
+    <SccProjectName>Svn</SccProjectName>
+    <SccAuxPath>Svn</SccAuxPath>
+    <SccLocalPath>Svn</SccLocalPath>
+    <SccProvider>SubversionScc</SccProvider>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -45,63 +49,68 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\libMobiledevice\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_LIBMD_BUILD;LIBMOBILEDEVICE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>
       </PrecompiledHeaderOutputFile>
+      <AdditionalIncludeDirectories>.\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>
-      </ModuleDefinitionFile>
-      <DelayLoadDLLs>
-      </DelayLoadDLLs>
-      <AdditionalLibraryDirectories>$(SolutionDir)/libMobiledevice/lib;$(SolutionDir)/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>libMobileDevice.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>iTunesMobileDevice.dll;CoreFoundation.dll</DelayLoadDLLs>
+      <AdditionalLibraryDirectories>./lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBMOBILEDEVICE_EXPORTS;_LIBMD_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\include</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\libMobiledevice\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>
-      </ModuleDefinitionFile>
-      <DelayLoadDLLs>
-      </DelayLoadDLLs>
-      <AdditionalLibraryDirectories>$(SolutionDir)/libMobiledevice/lib;$(SolutionDir)/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./lib</AdditionalLibraryDirectories>
+      <ImportLibrary>
+      </ImportLibrary>
+      <ModuleDefinitionFile>libMobileDevice.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>iTunesMobileDevice.dll;CoreFoundation.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="log.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="options.cpp" />
-    <ClCompile Include="recovery.cpp" />
+    <None Include="libMobileDevice.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="log.h" />
-    <ClInclude Include="main.h" />
-    <ClInclude Include="options.h" />
-    <ClInclude Include="recovery.h" />
+    <ClInclude Include="include\libmd\error.h" />
+    <ClInclude Include="include\libmd\libMobiledevice.h" />
+    <ClInclude Include="include\libmd\platform.h" />
+    <ClInclude Include="itunes_private.h" />
+    <ClInclude Include="itunes_private_api.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="error.cpp" />
+    <ClCompile Include="itunes_private.cpp" />
+    <ClCompile Include="itunes_private_api.cpp" />
+    <ClCompile Include="libMobiledevice.cpp" />
+    <ClCompile Include="platform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

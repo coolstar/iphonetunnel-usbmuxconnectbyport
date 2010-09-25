@@ -15,31 +15,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <None Include="libMobileDevice.def">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="recovery.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="options.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="log.h">
+    <ClInclude Include="itunes_private.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="options.h">
+    <ClInclude Include="include\libmd\libMobiledevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="main.h">
+    <ClInclude Include="include\libmd\platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="recovery.h">
+    <ClInclude Include="include\libmd\error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="itunes_private_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="libMobiledevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="itunes_private.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="platform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="itunes_private_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
