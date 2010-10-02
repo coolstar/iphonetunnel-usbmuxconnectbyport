@@ -112,7 +112,7 @@ typedef enum RECOVERY_CALLBACK_REASON {
 	CALLBACK_DFU_LEAVE,
 } RECOVERY_CALLBACK_REASON;
 
-typedef void (*recovery_callback_t)(RECOVERY_CALLBACK_REASON reason, AMRecoveryModeDevice device, void* ctx);
+typedef void (_cdecl *recovery_callback_t)(RECOVERY_CALLBACK_REASON reason, AMRecoveryModeDevice device, void* ctx);
 
 LIBMD_API extern log_function_t g_logFunction;
 

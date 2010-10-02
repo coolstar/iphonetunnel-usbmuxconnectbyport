@@ -10,5 +10,5 @@ char g_kernelcache[BUFSIZ] = "";
 char g_ramdiskCmd[BUFSIZ] =  "ramdisk";
 bool g_autoboot = FALSE;
 bool g_builtinApi = FALSE;
-int g_ramdiskDelay = 0;
+int g_ramdiskDelay = 5;
 int g_logSeverity = LOG_INFO;

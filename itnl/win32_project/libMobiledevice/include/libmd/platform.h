@@ -112,13 +112,13 @@ extern "C" void CFRelease(void* ptr);
 
 #endif // WIN32
 
-#ifdef __cpusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 	LIBMD_API LIBMD_ERROR libmd_platform_init();
 
-#ifdef __cpusplus
+#ifdef __cplusplus
 }
 #endif
 
