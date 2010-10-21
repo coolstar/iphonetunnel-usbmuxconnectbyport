@@ -7,10 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		52382D170E84F53700ADA825 /* MobileDevice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52CD38530E84A54200B37BFD /* MobileDevice.framework */; };
 		52CD373D0E83FA8D00B37BFD /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52CD373C0E83FA8D00B37BFD /* CoreFoundation.framework */; };
 		9D27E00D10CB38D700C334CE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D27E00C10CB38D700C334CE /* Foundation.framework */; };
-		9D55186F12709BAA00BFEB91 /* libdylib.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D55184312709B9900BFEB91 /* libdylib.dylib */; };
+		9D83E29B1270A76A007DAFBB /* libdylib.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D55184312709B9900BFEB91 /* libdylib.dylib */; };
 		9DAEE65D11A07926001A11CF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9DAEE65C11A07926001A11CF /* main.cpp */; };
 		9DECAF6B124E5335003CB055 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9DECAF68124E5335003CB055 /* log.cpp */; };
 		9DECAF6C124E5335003CB055 /* options.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9DECAF69124E5335003CB055 /* options.cpp */; };
@@ -22,7 +21,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 9D55183C12709B9900BFEB91 /* dylib.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = D2AAC0630554660B00DB518D /* libdylib.dylib */;
+			remoteGlobalIDString = D2AAC0630554660B00DB518D;
+			remoteInfo = dylib;
+		};
+		9D83E2A61270A795007DAFBB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9D55183C12709B9900BFEB91 /* dylib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC0620554660B00DB518D /* dylib */;
 			remoteInfo = dylib;
 		};
 /* End PBXContainerItemProxy section */
@@ -41,7 +47,6 @@
 
 /* Begin PBXFileReference section */
 		52CD373C0E83FA8D00B37BFD /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-		52CD38530E84A54200B37BFD /* MobileDevice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileDevice.framework; path = /System/Library/PrivateFrameworks/MobileDevice.framework; sourceTree = "<absolute>"; };
 		9D27E00C10CB38D700C334CE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9D55183C12709B9900BFEB91 /* dylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = dylib.xcodeproj; path = dylib/dylib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9DAEE65C11A07926001A11CF /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = win32_project/itunnel_mux/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -56,10 +61,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9D55186F12709BAA00BFEB91 /* libdylib.dylib in Frameworks */,
 				52CD373D0E83FA8D00B37BFD /* CoreFoundation.framework in Frameworks */,
-				52382D170E84F53700ADA825 /* MobileDevice.framework in Frameworks */,
 				9D27E00D10CB38D700C334CE /* Foundation.framework in Frameworks */,
+				9D83E29B1270A76A007DAFBB /* libdylib.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,7 +76,6 @@
 				9D55183C12709B9900BFEB91 /* dylib.xcodeproj */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
-				52CD38530E84A54200B37BFD /* MobileDevice.framework */,
 				9D27E00C10CB38D700C334CE /* Foundation.framework */,
 				52CD373C0E83FA8D00B37BFD /* CoreFoundation.framework */,
 			);
@@ -120,6 +123,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9D83E2A71270A795007DAFBB /* PBXTargetDependency */,
 			);
 			name = itnl;
 			productInstallPath = "$(HOME)/bin";
@@ -181,6 +185,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		9D83E2A71270A795007DAFBB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = dylib;
+			targetProxy = 9D83E2A61270A795007DAFBB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		1DEB928608733DD80010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -198,6 +210,7 @@
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = itnl;
+				VALID_ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 			};
 			name = Debug;
 		};
@@ -214,7 +227,7 @@
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = itnl;
-				VALID_ARCHS = ppc;
+				VALID_ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 			};
 			name = Release;
 		};

@@ -32,7 +32,7 @@
 		9D55172C127065CB00BFEB91 /* libMobiledevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = libMobiledevice.cpp; path = ../win32_project/libMobiledevice/libMobiledevice.cpp; sourceTree = SOURCE_ROOT; };
 		9D55172D127065CB00BFEB91 /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = platform.cpp; path = ../win32_project/libMobiledevice/platform.cpp; sourceTree = SOURCE_ROOT; };
 		9D551760127067D200BFEB91 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-		9D55183012709AB500BFEB91 /* MobileDevice */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = MobileDevice; path = /Users/msftguy/Documents/itnl/dylib/MobileDevice; sourceTree = "<absolute>"; };
+		9D55183012709AB500BFEB91 /* MobileDevice */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = MobileDevice; sourceTree = "<group>"; };
 		D2AAC0630554660B00DB518D /* libdylib.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libdylib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
