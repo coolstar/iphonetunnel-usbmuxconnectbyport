@@ -49,7 +49,7 @@ void recovery_connect_callback_icmd(AMRecoveryModeDevice device)
 		g_icmdState = ICMD_SENT_IBEC;
 		if (*g_ibec) {
 			uploadFile(device, g_ibec);
-			libmd_builtin_sendCommand(device, "go");
+			libmd_builtin_sendCommand(device, g_goCmd);
 			Log(LOG_INFO, "iBEC %s loaded", g_ibec);
 			return; // continue after reconnect
 		}

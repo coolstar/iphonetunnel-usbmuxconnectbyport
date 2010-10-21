@@ -25,17 +25,17 @@ BOOL WINAPI DllMain(
 	return TRUE;
 }
 
-static char g_ibss[BUFSIZ] = "";
-static char g_exploit[BUFSIZ] = "";
-static char g_ibec[BUFSIZ] = "";
-static char g_ramdisk[BUFSIZ] = "";
-static char g_devicetree[BUFSIZ] = "";
-static char g_kernelcache[BUFSIZ] = "";
-static char g_ramdiskCmd[BUFSIZ] =  "ramdisk";
-static bool g_autoboot = FALSE;
-static int g_ramdiskDelay = 0;
+//static char g_ibss[BUFSIZ] = "";
+//static char g_exploit[BUFSIZ] = "";
+//static char g_ibec[BUFSIZ] = "";
+//static char g_ramdisk[BUFSIZ] = "";
+//static char g_devicetree[BUFSIZ] = "";
+//static char g_kernelcache[BUFSIZ] = "";
+//static char g_ramdiskCmd[BUFSIZ] =  "ramdisk";
+//static bool g_autoboot = FALSE;
+//static int g_ramdiskDelay = 0;
 
-typedef char OPTION_T [BUFSIZ];
+//typedef char OPTION_T [BUFSIZ];
 
 #pragma mark Prototype definition
 
