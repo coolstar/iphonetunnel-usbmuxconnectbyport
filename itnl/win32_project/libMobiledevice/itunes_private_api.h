@@ -3,7 +3,7 @@
 
 #include <libmd/libMobiledevice.h>
 
-typedef int (__cdecl* AMRecoveryModeDeviceSendFileToDevice_t)(PVOID rDevInt, CFStringRef cfstrFilename);
+typedef int (_cdecl* AMRecoveryModeDeviceSendFileToDevice_t)(PVOID rDevInt, CFStringRef cfstrFilename);
 
 AMRecoveryModeDeviceSendFileToDevice_t locate_AMRecoveryModeDeviceSendFileToDevice();
 

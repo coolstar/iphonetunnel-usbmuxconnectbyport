@@ -1,8 +1,7 @@
-#pragma once
-
 #ifndef _LIBMOBILEDEVICE_H
-
 #define _LIBMOBILEDEVICE_H
+
+#ifdef WIN32
 
 #define LIBMD_API __declspec(dllimport)
 
@@ -12,9 +11,18 @@
 #ifdef _WINDLL 
 #undef LIBMD_API 
 #define LIBMD_API __declspec(dllexport)
-#endif
+#endif //_WINDLL
 
-#endif
+#endif //_LIBMD_BUILD
+
+#else //WIN32
+
+#ifdef _LIBMD_BUILD
+#define LIBMD_API __attribute__ ((visibility("default")))
+#else //_LIBMD_BUILD
+#define LIBMD_API
+#endif //_LIBMD_BUILD
+#endif //WIN32
 
 #include <libmd/platform.h>
 #include <libmd/error.h>
@@ -77,6 +85,7 @@ int AMRestoreRegisterForDeviceNotifications(
 
 int AMRecoveryModeDeviceReboot(AMRecoveryModeDevice device);
 int AMRecoveryModeDeviceSetAutoBoot(AMRecoveryModeDevice device, bool autoboot);
+
 
 CFStringRef AMDeviceCopyDeviceIdentifier(am_device_t device);
 

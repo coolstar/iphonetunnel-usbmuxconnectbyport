@@ -1,9 +1,11 @@
 #include <libmd/libMobiledevice.h>
-#include "itunes_private_api.h"
 
 BOOL libmd_private_api_located = FALSE;
 
 #if WIN32
+
+#include "itunes_private_api.h"
+
 LIBMD_ERROR libmd_platform_init() {
 
 	WSADATA useless;
@@ -86,7 +88,7 @@ static void recv_signal(int sig)
 }
 #endif
 
-void libmd_platform_init() {
+LIBMD_API LIBMD_ERROR libmd_platform_init() {
 	signal(SIGABRT, recv_signal);
 	signal(SIGILL, recv_signal);
 	signal(SIGINT, recv_signal);
@@ -94,5 +96,6 @@ void libmd_platform_init() {
 	signal(SIGTERM, recv_signal);
 	// always the case since those are exported
 	libmd_private_api_located = TRUE;
+	return LIBMD_ERR_SUCCESS;
 }
 #endif

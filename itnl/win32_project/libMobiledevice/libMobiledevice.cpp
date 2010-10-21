@@ -17,6 +17,8 @@ log_function_t g_logFunction = DummyLogFn;
 
 #define Log g_logFunction
 
+#ifdef WIN32
+
 BOOL WINAPI DllMain(
    DWORD dwReason,
    LPVOID /*lpReserved*/
@@ -25,17 +27,7 @@ BOOL WINAPI DllMain(
 	return TRUE;
 }
 
-//static char g_ibss[BUFSIZ] = "";
-//static char g_exploit[BUFSIZ] = "";
-//static char g_ibec[BUFSIZ] = "";
-//static char g_ramdisk[BUFSIZ] = "";
-//static char g_devicetree[BUFSIZ] = "";
-//static char g_kernelcache[BUFSIZ] = "";
-//static char g_ramdiskCmd[BUFSIZ] =  "ramdisk";
-//static bool g_autoboot = FALSE;
-//static int g_ramdiskDelay = 0;
-
-//typedef char OPTION_T [BUFSIZ];
+#endif //WIN32
 
 #pragma mark Prototype definition
 
@@ -192,7 +184,7 @@ void notification(struct am_device_notification_callback_info* info)
 
 void* THREADPROCATTR wait_for_device(void* arg)
 {
-	int iphonePort = (int)arg;
+	int iphonePort = (int)(intptr_t)arg;
 	int ret;
 	int handle = -1;
 	restore_dev_t restore_dev;
@@ -333,3 +325,5 @@ void libmd_set_autoboot(AMRecoveryModeDevice device, bool autoboot)
 	AMRecoveryModeDeviceSetAutoBoot(device, true);
 	AMRecoveryModeDeviceReboot(device);	
 }
+
+

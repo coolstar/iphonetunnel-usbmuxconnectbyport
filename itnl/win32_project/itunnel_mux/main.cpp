@@ -51,16 +51,7 @@ struct connection
 
 void* THREADPROCATTR wait_for_device(void*);
 void wait_connections();
-void notification(struct am_device_notification_callback_info*static int threadCount = 0;
-
-static int  sock;
-
-static muxconn_t muxConn = 0;
-
-static const char* target_device_id = nil;
-ar* target_device_id = nil;
-
-// ターゲッ�ルを投げる
+void notification(struct am_device_notification_callback_info*��ルを投げる
         fflush(stdout);
         signal(sig, SIG_DFL);
         raise(sig);
@@ -71,7 +62,7 @@ ar* target_device_id = nil;
 
 #if WIN32 
 	const uint g_iphone_port = 22;
-innst unsigned short default_local_port static ICMD_STATE g_icmdState = ICMD_ZERO;		GetLparse_args(int argc, char *argv [])
+innst unsigned short default_local_port GetLparse_args(int argc, char *argv [])
 {
 	char** pArg;
 	for (pArg = argv + 1; pArg < argv + argc; ++pArg) {

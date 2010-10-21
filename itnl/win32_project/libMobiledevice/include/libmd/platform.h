@@ -6,6 +6,7 @@
 #include <winsock2.h>
 #include <stdio.h>
 #else 
+#include <objc/objc.h>
 #import <CoreFoundation/CoreFoundation.h>
 #include <dlfcn.h>
 #include <unistd.h>
@@ -103,6 +104,8 @@ extern "C" void CFRelease(void* ptr);
 #endif
 
 #else ////////////////////////// OS X ///////////////////
+
+#define _cdecl
 
 #define THREADPROCATTR 
 

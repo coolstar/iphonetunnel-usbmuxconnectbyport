@@ -3,7 +3,7 @@
 #include <libmd/libMobiledevice.h>
 #include "options.h"
 
-char* sev2str(LOG_LEVEL severity)
+const char* sev2str(LOG_LEVEL severity)
 {
 	switch(severity)
 	{
