@@ -66,6 +66,12 @@ namespace RamdiskBuilder {
                 string ivStr = ivString.Text;// "fd19726dc6b555b6bb4dbbcd91d1e7c0";
                 string keyStr = keyString.Text; // "fb2792b935fb9cd183341cb24539376556f8b7b8f887eb90fcebaa0daf2d6d9c";
 
+                string kbagHexStr = xpwn.xpwntool_get_kbag(droppedFile);
+
+                if (!string.IsNullOrEmpty(kbagHexStr)) {
+                    Log("KBAG: {0}", kbagHexStr);
+                }
+
                 string decFile = droppedFile + ".dec";
                 if (0 != xpwn.xpwntool_enc_dec(droppedFile, decFile, null, ivStr, keyStr)) {
                     Log("Decrypt failed!");

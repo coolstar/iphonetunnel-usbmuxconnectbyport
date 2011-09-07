@@ -2,20 +2,40 @@
 #include <string.h>
 #include "xpwn/libxpwn.h"
 #include "xpwn/nor_files.h"
+#include "xpwn/img3.h"
 #include "xpwndll.h"
 
 #define BUFFERSIZE (1024*1024)
+
+char* xpwntool_get_kbag(char* fileName)
+{
+	char* strbuf = NULL;
+	AbstractFile* inFile;
+	inFile = openAbstractFile2(createAbstractFileFromFile(fopen(fileName, "rb")), NULL, NULL);
+	if (inFile != NULL && inFile->type == AbstractFileTypeImg3) {
+		Img3Info* i3i = (Img3Info*)(inFile->data);
+		if (i3i != NULL) {
+			Img3Element* kbag = i3i->kbag;
+			if (kbag != NULL && kbag->data != NULL && kbag->header != NULL) {
+				size_t buflen = 1 + 2 * kbag->header->dataSize;
+				strbuf = (char*)HeapAlloc(GetProcessHeap(), 0, buflen);
+				char* bytes = (char*)kbag->data;
+				for (size_t i = 0; i <  kbag->header->dataSize; ++i) {
+					snprintf(strbuf + 2 * i, 2, "%02X", (unsigned char) bytes[i]);
+				}
+				strbuf[buflen-1] = '\0';
+				return strbuf;
+			}
+		}
+		inFile->close(inFile);
+	}
+	return strbuf;
+}
 
 int xpwntool_enc_dec(char* srcName, char* destName, char* templateFileName, char* ivStr, char* keyStr)
 {
 	char* inData;
 	size_t inDataSize;
-	//init_libxpwn();
-
-	//if(argc < 3) {
-	//	printf("usage: %s <infile> <outfile> [-x24k] [-t <template> [-c <certificate>]] [-k <key>] [-iv <key>] [-decrypt]\n", argv[0]);
-	//	return 0;
-	//}
 
 	AbstractFile* templateFile = NULL;
 	unsigned int* key = NULL;
@@ -33,8 +53,12 @@ int xpwntool_enc_dec(char* srcName, char* destName, char* templateFileName, char
 
 	size_t bytes;
 	hexToInts(keyStr, &key, &bytes);
-
-	hexToInts(ivStr, &iv, &bytes);
+	if (bytes == 0) {
+		free(key);
+		key = NULL;
+	} else {
+		hexToInts(ivStr, &iv, &bytes);
+	}
 
 	AbstractFile* inFile;
 	inFile = openAbstractFile2(createAbstractFileFromFile(fopen(srcName, "rb")), key, iv);
@@ -61,10 +85,12 @@ int xpwntool_enc_dec(char* srcName, char* destName, char* templateFileName, char
 	} else {
 		newFile = outFile;
 	}
-
+	 
 	if(newFile->type == AbstractFileTypeImg3) {
 		AbstractFile2* abstractFile2 = (AbstractFile2*) newFile;
-		abstractFile2->setKey(abstractFile2, key, iv);
+		if (key != NULL) {
+			abstractFile2->setKey(abstractFile2, key, iv);
+		}
 	}
 
 	inDataSize = (size_t) inFile->getLength(inFile);

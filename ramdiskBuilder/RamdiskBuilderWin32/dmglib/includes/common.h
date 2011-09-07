@@ -117,6 +117,9 @@ static inline void hexToBytes(const char* hex, uint8_t** buffer, size_t* bytes) 
 }
 
 static inline void hexToInts(const char* hex, unsigned int** buffer, size_t* bytes) {
+	if (buffer == NULL) {
+		hex = "";
+	}
 	*bytes = strlen(hex) / 2;
 	*buffer = (unsigned int*) malloc((*bytes) * sizeof(int));
 	size_t i;

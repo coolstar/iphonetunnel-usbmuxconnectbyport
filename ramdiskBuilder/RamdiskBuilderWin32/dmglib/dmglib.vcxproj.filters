@@ -228,7 +228,7 @@
       <Filter>Header Files\xpwn</Filter>
     </ClInclude>
     <ClInclude Include="xpwndll.h">
-      <Filter>Source Files\xpwntool</Filter>
+      <Filter>Source Files\xpwntool\dll</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

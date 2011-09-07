@@ -14,6 +14,10 @@ namespace RamdiskBuilder {
             [MarshalAs(UnmanagedType.LPStr)] string templateFileName, 
             [MarshalAs(UnmanagedType.LPStr)] string ivStr,
             [MarshalAs(UnmanagedType.LPStr)] string keyStr);
-    
+
+        [DllImport("dmglib.dll", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.LPStr)]
+        public static extern string xpwntool_get_kbag(
+            [MarshalAs(UnmanagedType.LPStr)]string fileName);
     }
 }
