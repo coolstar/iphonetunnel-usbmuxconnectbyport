@@ -85,9 +85,13 @@ int AMRestoreRegisterForDeviceNotifications(
 
 int AMRecoveryModeDeviceReboot(AMRecoveryModeDevice device);
 int AMRecoveryModeDeviceSetAutoBoot(AMRecoveryModeDevice device, bool autoboot);
+int AMRecoveryModeDeviceGetTypeID(AMRecoveryModeDevice device);
+int AMRecoveryModeDeviceGetProductID(AMRecoveryModeDevice device);
+int AMRecoveryModeDeviceGetProductType(AMRecoveryModeDevice device);
 
 
 CFStringRef AMDeviceCopyDeviceIdentifier(am_device_t device);
+int AMDeviceGetInterfaceType(am_device_t device);
 
 muxconn_t AMDeviceGetConnectionID(am_device_t device);
 muxconn_t AMRestoreModeDeviceGetDeviceID(restore_dev_t restore_device);

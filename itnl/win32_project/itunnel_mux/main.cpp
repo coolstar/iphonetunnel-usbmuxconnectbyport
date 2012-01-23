@@ -174,8 +174,10 @@ int main (int argc, char *argv [])
 	case MODE_ICMD:
 		Log(LOG_INFO, "Waiting for a device in Recovery mode to connect..");
  		libmd_set_recovery_callback(recovery_callback, NULL);
-		Sleep(-1);
-		break;
+#ifndef WIN32
+            CFRunLoopRun();
+#endif
+            break;
 	case MODE_TUNNEL:
 		libmd_start_mux_tunnel(g_local_port, g_iphone_port);
 		break;

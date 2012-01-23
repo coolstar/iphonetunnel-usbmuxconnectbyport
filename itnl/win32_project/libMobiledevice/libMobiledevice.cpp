@@ -65,6 +65,10 @@ typedef struct CB_CTX {
 void call_client_callback(RECOVERY_CALLBACK_REASON reason, AMRecoveryModeDevice device, void* ctx)
 {
 	CB_CTX* context = (CB_CTX*)ctx;
+    Log(LOG_DEBUG, "call_client_callback(): pid=0x%x, ptype=0x%x", 
+        AMRecoveryModeDeviceGetProductID(device),
+        AMRecoveryModeDeviceGetProductType(device));
+
 	context->clientCallback(reason, device, context->clientCtx);
 }
 
@@ -169,13 +173,23 @@ void notification(struct am_device_notification_callback_info* info)
 	switch (info -> msg)
 	{
 	case ADNCI_MSG_CONNECTED:
-		target_device = info->dev;
-		Log(LOG_INFO, "Device connected: %s", getConnectedDeviceName(info));
-		break;
+        {
+            int interfaceType = AMDeviceGetInterfaceType(info->dev);   
+            int ignore = interfaceType != 1;
+            Log(LOG_INFO, "Device connected: %s%s", getConnectedDeviceName(info), 
+                ignore ? " - Ignoring (non-USB)" : "");
+            if (!ignore) {
+                target_device = info->dev;
+            }
+        }
+ 		break;
 	case ADNCI_MSG_DISCONNECTED:
-		target_device = nil;
-		Log(LOG_INFO, "Device disconnected: %s", getConnectedDeviceName(info));
-		muxConn = 0;
+        Log(LOG_INFO, "Device disconnected: %s", getConnectedDeviceName(info));
+        if (info->dev == target_device) {
+            Log(LOG_INFO, "Clearing saved mux connection");
+            target_device = nil;
+            muxConn = 0;
+        }
 		break;
 	default:
 		break;
@@ -210,17 +224,26 @@ void* THREADPROCATTR wait_for_device(void* arg)
 		
 		if (muxConn == 0)
 		{
-			ret = AMDeviceConnect(target_device);
-			if (ret == ERR_SUCCESS) {
+            ret = AMDeviceConnect(target_device);
+			Log(LOG_DEBUG, "AMDeviceConnect() = 0x%x", ret);
+            
+            if (ret == ERR_SUCCESS) {
 				muxConn = AMDeviceGetConnectionID(target_device);
-			} else if (ret == -402653144) {
-				restore_dev = AMRestoreModeDeviceCreate(0, AMDeviceGetConnectionID(target_device), 0);
-				Log(LOG_DEBUG, "restore_dev = %p", restore_dev);
-				muxConn = AMRestoreModeDeviceGetDeviceID(restore_dev);
-				Log(LOG_DEBUG, "muxConn = %X", muxConn);
-				AMRestoreModeDeviceReboot(restore_dev);
-				sleep(10);
-			} else {
+			} else if (ret == -402653144) { // means recovery mode .. I think
+				muxconn_t mux_tmp = AMDeviceGetConnectionID(target_device);
+                Log(LOG_DEBUG, "muxConnTmp = %X", mux_tmp);
+                muxConn = mux_tmp;
+                restore_dev = AMRestoreModeDeviceCreate(0, mux_tmp, 0);
+                Log(LOG_DEBUG, "restore_dev = %p", restore_dev);
+                if (restore_dev != NULL) {
+                    AMRestoreModeDeviceReboot(restore_dev);
+                    sleep(5);
+                } 
+			} else if (ret == -402653083) { // after we call 'reboot', api host is down
+                muxconn_t mux_tmp = AMDeviceGetConnectionID(target_device);
+                Log(LOG_DEBUG, "muxConnTmp = %X", mux_tmp);
+                muxConn = mux_tmp;
+            } else {
 				Log(LOG_ERROR, "AMDeviceConnect = %i", ret);
 				goto error_connect;
 			}

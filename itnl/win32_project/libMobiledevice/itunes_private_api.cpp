@@ -151,11 +151,24 @@ LIBMD_API int libmd_builtin_sendCommand(AMRecoveryModeDevice device, const char*
 {
 	CFStringRef cfstrCmd = __CFStringMakeConstantString(cmd);
 	return AMRecoveryModeDeviceSendCommandToDevice(device, cfstrCmd);	
-	
 }
 
 LIBMD_API int libmd_builtin_uploadFileDfu(AMRecoveryModeDevice device, const char* fileName)
 {
+	struct xxxx {
+		unsigned char x1C[0x1C];
+		unsigned int atx1C;
+		unsigned char atx20;
+		unsigned char filler1[3];
+		unsigned char atx24;
+		unsigned char filler2[3];
+	};
+	xxxx* px = (xxxx*)device;
+	px->atx1C = -1;
+	px->atx20 = 1;
+	px->atx24 = 0xFF;
+	assert(sizeof(int) == 4);
+	Log(LOG_DEBUG, "libmd_builtin_uploadFileDfu: flags patched; sizeof(int)=%u", sizeof(int));
 	return call_AMRecoveryModeDeviceSendFileToDevice(device, fileName);	
 }
 
